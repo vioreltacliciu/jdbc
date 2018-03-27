@@ -22,6 +22,7 @@ public class EntityUtils {
     }
 
 
+
     //new
     public static QueryBuilder getQueryBuilder(Class<?> entityClass){
         QueryBuilder ret=new QueryBuilder();
@@ -31,58 +32,51 @@ public class EntityUtils {
     }
 
     public static String getTableName(Class<?> entityClass){
-       Table table= entityClass.getDeclaredAnnotation(Table.class);
-       if(table==null){
-           throw new NoEntityException(entityClass);
-       }
-       return table.name();
+        Table table= entityClass.getDeclaredAnnotation(Table.class);
+        if(table==null){
+            throw new NoEntityException(entityClass);
+        }
+        return table.name();
 
     }
 
-    public static List<ColumnInfo> getColumns(Class<?> entityClass){
+    public static List<ColumnInfo> getColumns(Class<?> entityClass, Object...instance){
         List<ColumnInfo> ret=new ArrayList<>();
         Field[] fields = entityClass.getDeclaredFields();
+//        Object inst=instance!=null&&instance.length==1?instance[0]:null;
         for (Field field : fields) {
+            field.setAccessible(true);
 
-            Annotation[] allFieldAnnotations=field.getAnnotations();
-            ColumnInfo columnInfo=new ColumnInfo();
-            for (Annotation annotation : allFieldAnnotations) {
 
-                if(annotation instanceof Column){
-                    columnInfo.setColumnType(field.getType());
-                    columnInfo.setColumnName(field.getName());
-                    columnInfo.setDbColumnName(((Column) annotation).name());
-                }
-
-                if(annotation instanceof Id){
-                    columnInfo.setId(true);
-                }
-            }
-            if(columnInfo.getDbColumnName()!=null){
+            Column columnAnnotation=field.getDeclaredAnnotation(Column.class);
+            Id columnId=field.getDeclaredAnnotation(Id.class);
+            if(columnAnnotation!=null){
+                ColumnInfo columnInfo=new ColumnInfo();
+                columnInfo.setColumnType(field.getType());
+                columnInfo.setColumnName(field.getName());
+                columnInfo.setDbColumnName(columnAnnotation.name());
+                columnInfo.setId(columnId!=null);
                 ret.add(columnInfo);
+
             }
+
+
 
         }
         return ret;
     }
 
-    public static Object castFromSqlType(Object value, Class wantedType){
-        if(value==null){
-            return null;
-        }
-        if(value instanceof BigDecimal){
-            if(wantedType.equals(Integer.class)){
-                return ((BigDecimal) value).intValue();
-            }else if(wantedType.equals(Long.class)){
-                return ((BigDecimal) value).longValue();
-            }else{
-                return value;
+    //new
+    public static ColumnInfo getPkColumn(Class<?> entityClass){
+        List<ColumnInfo> allColumns=getColumns(entityClass);
+        for (ColumnInfo column : allColumns) {
+            if(column.isId()){
+                return column;
             }
-        }else{
-            return value;
         }
-
+        throw new NoEntityIdException(entityClass);
     }
+
 
     public static List<Field> getFieldsByAnnotation(Class<?> entityClass, Class annotation){
         List<Field> ret=new ArrayList<>();
@@ -112,15 +106,9 @@ public class EntityUtils {
         }
     }
 
-    public static ColumnInfo getPkColumn(Class<?> entityClass){
-        List<ColumnInfo> allColumns=getColumns(entityClass);
-        for (ColumnInfo column : allColumns) {
-            if(column.isId()){
-                return column;
-            }
-        }
-        throw new NoEntityIdException(entityClass);
-    }
+
+
+
 
 
     public static void main(String[] args) {

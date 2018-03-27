@@ -33,6 +33,14 @@ public class SQLHelper {
         return value.toString();
     }
 
+
+    public static Condition condition(ColumnInfo columnInfo){
+        Condition condition = new Condition();
+        condition.setColumnName(columnInfo.getDbColumnName());
+        condition.setValue(columnInfo.getValue());
+        return condition;
+    }
+
     public static void main(String[] args) {
         System.out.println(prepareForSql(new Date()));
     }

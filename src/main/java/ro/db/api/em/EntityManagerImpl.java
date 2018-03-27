@@ -25,11 +25,9 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
             QueryBuilder queryBuilder=EntityUtils.getQueryBuilder(entityClass);
             queryBuilder.setQueryType(QueryType.SELECT);
 
-            String columnName=EntityUtils.getPkColumn(entityClass).getDbColumnName();
-
-
-
-
+            ColumnInfo idColumn=EntityUtils.getPkColumn(entityClass);
+            idColumn.setValue(id);
+            queryBuilder.addCondition(SQLHelper.condition(idColumn));
 
         } catch (IllegalAccessException | InstantiationException e) {
             LOG.error(e);

@@ -22,6 +22,6 @@ public class EntityUtilsTest {
 
     @Test
     public void testGetFieldsByAnnotations() throws NoSuchFieldException {
-        assertEquals(2, EntityUtils.getFieldsByAnnotations(Department.class, Column.class).size());
+        assertEquals(2, EntityUtils.getFieldsByAnnotation(Department.class, Column.class).size());
     }
 }
