@@ -99,7 +99,7 @@ public class EntityUtils {
         return ret;
     }
 
-    public static Object getSqlValue(Object object) throws IllegalAccessException {
+    public static Object getPkValue(Object object) throws IllegalAccessException {
         if (object == null)
             return null;
 
@@ -110,6 +110,16 @@ public class EntityUtils {
         } else {
             return object;
         }
+    }
+
+    public static ColumnInfo getPkColumn(Class<?> entityClass){
+        List<ColumnInfo> allColumns=getColumns(entityClass);
+        for (ColumnInfo column : allColumns) {
+            if(column.isId()){
+                return column;
+            }
+        }
+        throw new NoEntityIdException(entityClass);
     }
 
 
