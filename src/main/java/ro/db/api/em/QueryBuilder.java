@@ -140,6 +140,15 @@ public class QueryBuilder {
         return stringBuilder.toString();
     }
 
+    public List<ColumnInfo> getQueryColumns() {
+        return queryColumns;
+    }
 
+    public QueryType getQueryType() {
+        return queryType;
+    }
 
+    public List<Condition> getConditions() {
+        return conditions;
+    }
 }

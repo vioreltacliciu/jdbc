@@ -106,6 +106,24 @@ public class EntityUtils {
         }
     }
 
+    public static Object castFromSqlType(Object value, Class wantedType){
+        if(value==null){
+            return null;
+        }
+        if(value instanceof BigDecimal){
+            if(wantedType.equals(Integer.class)){
+                return ((BigDecimal) value).intValue();
+            }else if(wantedType.equals(Long.class)){
+                return ((BigDecimal) value).longValue();
+            }else{
+                return value;
+            }
+        }else{
+            return value;
+        }
+
+    }
+
 
 
 
