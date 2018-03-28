@@ -1,6 +1,7 @@
 package ro.db.api.em;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Developer: Viorelt
@@ -16,5 +17,11 @@ public interface EntityManager<T> {
     T insert(T entity);
 
     List<T> findAll();
+
+    T update(T entity);
+
+    void delete(T entity);
+
+    List<T> findByParams(Map<String,Object> params);
 
 }

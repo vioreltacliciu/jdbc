@@ -95,7 +95,7 @@ public class QueryBuilder {
 
     private String createDeleteQuery(){
         StringBuilder stringBuilder=new StringBuilder();
-        stringBuilder.append("delete ");
+        stringBuilder.append("delete from ");
         queryTable(stringBuilder);
         queryFilter(stringBuilder);
         return stringBuilder.toString();
@@ -124,17 +124,20 @@ public class QueryBuilder {
         StringBuilder stringBuilder=new StringBuilder();
         stringBuilder.append("update ");
         queryTable(stringBuilder);
-
+        stringBuilder.append(" set ");
         for (int i = 0; i < queryColumns.size(); i++) {
             ColumnInfo queryColumn = queryColumns.get(i);
             if(i>0){
                 stringBuilder.append(",");
             }
-            stringBuilder.append("set ");
             stringBuilder.append(queryColumn.getDbColumnName()).append("=");
-            stringBuilder.append(SQLHelper.prepareForSql(queryColumn.getValue()));
+            //ne protejam la null -> set col=null
+            if(queryColumn.getValue()==null){
+                stringBuilder.append("null");
+            }else{
+                stringBuilder.append(SQLHelper.prepareForSql(queryColumn.getValue()));
+            }
         }
-        stringBuilder.append(")");
         queryFilter(stringBuilder);
 
         return stringBuilder.toString();

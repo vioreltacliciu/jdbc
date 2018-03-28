@@ -2,9 +2,12 @@ package ro.db.api.em;
 
 import org.junit.Before;
 import org.junit.Test;
+import ro.db.appl.domain.Department;
 import ro.db.appl.domain.Location;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +52,44 @@ public class EntityManagerTest {
 
     @Test
     public void testFindAll() {
-        List<Location> all=entityManager.findAll();
+        List<Department> all= new EntityManagerImpl<>(Department.class).findAll();
         assertTrue(all.size()>0);
+    }
+
+    @Test
+    public void testUpdate() {
+        Location location=entityManager.findById(1000L);
+        String streetAddress = location.getStreetAddress() + "_test";
+        location.setStreetAddress(streetAddress);
+        entityManager.update(location);
+        Location locationDb=entityManager.findById(1000L);
+        assertEquals(streetAddress,locationDb.getStreetAddress());
+
+    }
+
+
+    @Test
+    public void testDelete() {
+        Location location=entityManager.findById(1000L);
+        entityManager.delete(location);
+
+        Location locationDb=entityManager.findById(1000L);
+        assertNull(locationDb);
+
+        location.setId(null);
+        locationDb=entityManager.insert(location);
+
+        assertNotNull(locationDb.getId());
+
+    }
+
+
+    @Test
+    public void testFindByParms() {
+        Map<String,Object> param=new HashMap<>();
+        param.put("location_id",1100L);
+        param.put("postal_code","10934");
+        List<Location> locations=entityManager.findByParams(param);
+        assertTrue(locations.size()==1);
     }
 }
